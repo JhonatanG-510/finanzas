@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Finanzas Personales</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Mobile Menu Toggle -->
+        <button id="sidebarToggle" class="sidebar-toggle btn btn-primary d-md-none mb-3 mt-3">
+            <i class="fas fa-bars"></i> Menú
+        </button>
+        
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <div class="sidebar-header mb-4 d-flex justify-content-between align-items-center">
+                        <h3><i class="fas fa-wallet"></i> FinanzApp</h3>
+                        <button id="sidebarClose" class="btn-close d-md-none"></button>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" id="dashboard-link">
+                                <i class="fas fa-home"></i> Inicio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="transactions-link">
+                                <i class="fas fa-exchange-alt"></i> Transacciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="income-link">
+                                <i class="fas fa-arrow-down"></i> Ingresos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="expenses-link">
+                                <i class="fas fa-arrow-up"></i> Gastos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="categories-link">
+                                <i class="fas fa-tags"></i> Categorías
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="reports-link">
+                                <i class="fas fa-chart-bar"></i> Reportes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="settings-link">
+                                <i class="fas fa-cog"></i> Configuración
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section">
+                    <!-- Header with User Info -->
+                    <div class="user-header mt-3 mb-4">
+                        <h4>Dashboard Finanzas</h4>
+                        <div class="date-range">
+                            <span id="current-date-range">Periodo actual</span>
+                        </div>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="date-filter d-flex">
+                                <input type="text" id="start-date" class="form-control datepicker" placeholder="Fecha inicial">
+                                <span class="mx-2 mt-2">-</span>
+                                <input type="text" id="end-date" class="form-control datepicker" placeholder="Fecha final">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="period-selector" class="form-select">
+                                <option value="current-month">Mes Actual</option>
+                                <option value="last-month">Mes Anterior</option>
+                                <option value="current-year">Año Actual</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button id="add-transaction-btn" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="row">
+                        <div class="col-md-3 mb-4">
+                            <div class="card metric-card income-card">
+                                <div class="card-body">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-arrow-down"></i>
+                                    </div>
+                                    <div class="metric-data">
+                                        <h5 class="metric-title">Ingresos</h5>
+                                        <h2 class="metric-value income-value">$0,00</h2>
+                                        <div class="metric-trend">
+                                            <span id="income-percent">0%</span>
+                                            <div class="small-chart">
+                                                <canvas id="income-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card metric-card expense-card">
+                                <div class="card-body">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </div>
+                                    <div class="metric-data">
+                                        <h5 class="metric-title">Gastos</h5>
+                                        <h2 class="metric-value expenses-value">$0,00</h2>
+                                        <div class="metric-trend">
+                                            <span id="expense-percent">0%</span>
+                                            <div class="small-chart">
+                                                <canvas id="expense-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card metric-card balance-card">
+                                <div class="card-body">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-wallet"></i>
+                                    </div>
+                                    <div class="metric-data">
+                                        <h5 class="metric-title">Balance</h5>
+                                        <h2 class="metric-value balance-value">$0,00</h2>
+                                        <div class="metric-trend">
+                                            <div class="progress">
+                                                <div class="progress-bar" id="main-progress-bar" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card metric-card savings-card">
+                                <div class="card-body">
+                                    <div class="metric-icon">
+                                        <i class="fas fa-piggy-bank"></i>
+                                    </div>
+                                    <div class="metric-data">
+                                        <h5 class="metric-title">Ahorro</h5>
+                                        <h2 class="metric-value savings-value">$0,00</h2>
+                                        <div class="metric-trend">
+                                            <span class="savings-percent">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alcancía Row -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-4">
+                            <div class="card piggy-bank-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title"><i class="fas fa-coins"></i> Alcancía</h5>
+                                        <button id="show-piggy-bank" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Ver Balance
+                                        </button>
+                                    </div>
+                                    <div class="piggy-bank-content">
+                                        <div class="piggy-bank-hidden">
+                                            <p>Tu alcancía está guardando tus ahorros de forma segura.</p>
+                                            <div class="d-flex align-items-center">
+                                                <div class="piggy-bank-icon me-3">
+                                                    <i class="fas fa-lock"></i>
+                                                </div>
+                                                <div class="progress flex-grow-1" style="height: 15px;">
+                                                    <div class="progress-bar bg-success" id="piggy-bank-progress" role="progressbar" style="width: 0%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="piggy-bank-revealed" style="display: none;">
+                                            <h3 class="piggy-bank-value">$0,00</h3>
+                                            <p>Acumulado hasta ahora</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button id="add-to-piggy-bank" class="btn btn-sm btn-success me-2">
+                                            <i class="fas fa-plus"></i> Añadir a Alcancía
+                                        </button>
+                                        <button id="withdraw-from-piggy-bank" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-minus"></i> Retirar de Alcancía
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Distribución por Categorías</h5>
+                                    <div class="chart-container">
+                                        <canvas id="expenses-by-category-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Chart -->
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title">Rendimiento Financiero</h5>
+                                        <div>
+                                            <button id="toggle-performance-chart" class="btn btn-sm btn-outline-primary me-2">
+                                                <i class="fas fa-chart-line"></i> Cambiar Vista
+                                            </button>
+                                            <button id="download-performance-data" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-download"></i> Descargar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="performance-header d-flex justify-content-between">
+                                        <div class="metric">
+                                            <span class="performance-label">Ingresos vs Gastos</span>
+                                            <span class="performance-value">+0%</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="performance-label">Tendencia</span>
+                                            <span class="trend-indicator"><i class="fas fa-equals text-warning"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="chart-container">
+                                        <canvas id="performance-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Transactions Section -->
+                <section id="transactions-section" style="display: none;">
+                    <div class="user-header mt-3 mb-4">
+                        <h4>Transacciones</h4>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="date-filter d-flex">
+                                <input type="text" id="transactions-start-date" class="form-control datepicker" placeholder="Fecha inicial">
+                                <span class="mx-2 mt-2">-</span>
+                                <input type="text" id="transactions-end-date" class="form-control datepicker" placeholder="Fecha final">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="transactions-filter" class="form-select">
+                                <option value="all">Todas las transacciones</option>
+                                <option value="income">Solo ingresos</option>
+                                <option value="expense">Solo gastos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button id="add-transaction-btn-2" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="no-transactions" class="text-center my-5">
+                                <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                                <h5>No hay transacciones registradas</h5>
+                                <p class="text-muted">Comienza añadiendo tu primera transacción</p>
+                                <button id="add-first-transaction" class="btn btn-primary mt-2">
+                                    <i class="fas fa-plus"></i> Añadir transacción
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="transactions-table" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Descripción</th>
+                                            <th>Categoría</th>
+                                            <th>Tipo</th>
+                                            <th class="text-end">Monto</th>
+                                            <th class="text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Transactions will be added dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Income Section -->
+                <section id="income-section" style="display: none;">
+                    <div class="user-header mt-3 mb-4">
+                        <h4>Ingresos</h4>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="date-filter d-flex">
+                                <input type="text" id="income-start-date" class="form-control datepicker" placeholder="Fecha inicial">
+                                <span class="mx-2 mt-2">-</span>
+                                <input type="text" id="income-end-date" class="form-control datepicker" placeholder="Fecha final">
+                                <button id="filter-income" class="btn btn-outline-primary ms-2">
+                                    <i class="fas fa-filter"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button id="add-income-btn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Registrar Ingreso
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Estadísticas de Ingresos</h5>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="income-stat">
+                                                <h6>Total</h6>
+                                                <h3 id="income-total-amount">$0,00</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="income-stat">
+                                                <h6>Promedio</h6>
+                                                <h3 id="income-avg-amount">$0,00</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="income-stat">
+                                                <h6>Mayor Ingreso</h6>
+                                                <h3 id="income-max-amount">$0,00</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="chart-container mt-4">
+                                        <canvas id="income-trend-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Últimos Ingresos</h5>
+                                    <div class="table-responsive">
+                                        <table id="income-table" class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Descripción</th>
+                                                    <th>Categoría</th>
+                                                    <th class="text-end">Monto</th>
+                                                    <th class="text-center">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Income transactions will be added dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ingresos por Categoría</h5>
+                                    <div class="chart-container">
+                                        <canvas id="income-by-category-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Frecuencia de Ingresos</h5>
+                                    <div id="income-frequency-chart-container" class="chart-container">
+                                        <canvas id="income-frequency-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Expenses Section -->
+                <section id="expenses-section" style="display: none;">
+                    <div class="user-header mt-3 mb-4">
+                        <h4>Gastos</h4>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="date-filter d-flex">
+                                <input type="text" id="expenses-start-date" class="form-control datepicker" placeholder="Fecha inicial">
+                                <span class="mx-2 mt-2">-</span>
+                                <input type="text" id="expenses-end-date" class="form-control datepicker" placeholder="Fecha final">
+                                <button id="filter-expenses" class="btn btn-outline-primary ms-2">
+                                    <i class="fas fa-filter"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button id="add-expense-btn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Registrar Gasto
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Estadísticas de Gastos</h5>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="expense-stat">
+                                                <h6>Total</h6>
+                                                <h3 id="expense-total-amount">$0,00</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="expense-stat">
+                                                <h6>Promedio</h6>
+                                                <h3 id="expense-avg-amount">$0,00</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="expense-stat">
+                                                <h6>Mayor Gasto</h6>
+                                                <h3 id="expense-max-amount">$0,00</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="chart-container mt-4">
+                                        <canvas id="expenses-trend-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Últimos Gastos</h5>
+                                    <div class="table-responsive">
+                                        <table id="expenses-table" class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Descripción</th>
+                                                    <th>Categoría</th>
+                                                    <th class="text-end">Monto</th>
+                                                    <th class="text-center">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Expense transactions will be added dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Gastos por Categoría</h5>
+                                    <div class="chart-container">
+                                        <canvas id="expenses-distribution-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Tendencia de Gastos</h5>
+                                    <div id="expenses-frequency-chart-container" class="chart-container">
+                                        <canvas id="expenses-frequency-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Categories Section -->
+                <section id="categories-section" style="display: none;">
+                    <div class="user-header mt-3 mb-4">
+                        <h4>Categorías</h4>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title">Categorías de Ingresos</h5>
+                                        <button id="add-income-category" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-plus"></i> Añadir Categoría
+                                        </button>
+                                    </div>
+                                    <div class="alert alert-info d-none" id="income-category-alert">
+                                        No hay categorías de ingresos. ¡Añade una!
+                                    </div>
+                                    <ul class="list-group category-list" id="income-categories-list">
+                                        <!-- Income categories will be added dynamically -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="card-title">Categorías de Gastos</h5>
+                                        <button id="add-expense-category" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-plus"></i> Añadir Categoría
+                                        </button>
+                                    </div>
+                                    <div class="alert alert-info d-none" id="expense-category-alert">
+                                        No hay categorías de gastos. ¡Añade una!
+                                    </div>
+                                    <ul class="list-group category-list" id="expense-categories-list">
+                                        <!-- Expense categories will be added dynamically -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Distribución de Ingresos por Categoría</h5>
+                                    <div class="chart-container">
+                                        <canvas id="income-categories-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Distribución de Gastos por Categoría</h5>
+                                    <div class="chart-container">
+                                        <canvas id="expense-categories-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reports Section -->
+                <section id="reports-section" style="display: none;">
+                    <div class="user-header mt-3 mb-4">
+                        <h4>Reportes Financieros</h4>
+                    </div>
+
+                    <!-- Report Selection Controls -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <select id="report-type" class="form-select">
+                                <option value="monthly-summary">Resumen Mensual</option>
+                                <option value="category-analysis">Análisis por Categorías</option>
+                                <option value="trends-analysis">Análisis de Tendencias</option>
+                                <option value="cashflow">Flujo de Efectivo</option>
+                                <option value="savings-analysis">Análisis de Ahorros</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="date-filter d-flex">
+                                <input type="text" id="report-start-date" class="form-control datepicker" placeholder="Fecha inicial">
+                                <span class="mx-2 mt-2">-</span>
+                                <input type="text" id="report-end-date" class="form-control datepicker" placeholder="Fecha final">
+                                <button id="generate-report" class="btn btn-primary ms-2">
+                                    <i class="fas fa-sync-alt"></i> Generar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex justify-content-end">
+                                <button id="export-report-pdf" class="btn btn-outline-danger me-2">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </button>
+                                <button id="export-report-csv" class="btn btn-outline-success">
+                                    <i class="fas fa-file-csv"></i> CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Content -->
+                    <div id="report-content">
+                        <!-- Monthly Summary Report (Default) -->
+                        <div id="monthly-summary-report" class="report-section active">
+                            <div class="row">
+                                <div class="col-md-8 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Resumen Mensual</h5>
+                                            <div class="chart-container">
+                                                <canvas id="monthly-summary-chart"></canvas>
+                                            </div>
+                                            <div class="d-flex justify-content-between mt-3">
+                                                <div class="summary-stat">
+                                                    <span class="summary-label">Total Ingresos</span>
+                                                    <span class="summary-value" id="report-total-income">$0,00</span>
+                                                </div>
+                                                <div class="summary-stat">
+                                                    <span class="summary-label">Total Gastos</span>
+                                                    <span class="summary-value" id="report-total-expenses">$0,00</span>
+                                                </div>
+                                                <div class="summary-stat">
+                                                    <span class="summary-label">Balance</span>
+                                                    <span class="summary-value" id="report-balance">$0,00</span>
+                                                </div>
+                                                <div class="summary-stat">
+                                                    <span class="summary-label">Ahorro</span>
+                                                    <span class="summary-value" id="report-savings">$0,00</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Estadísticas Clave</h5>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="key-stat-label">Mayor ingreso</span>
+                                                    <span class="key-stat-value" id="report-highest-income">$0,00</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="key-stat-label">Mayor gasto</span>
+                                                    <span class="key-stat-value" id="report-highest-expense">$0,00</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="key-stat-label">Promedio diario de gastos</span>
+                                                    <span class="key-stat-value" id="report-avg-daily-expense">$0,00</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="key-stat-label">Días sin gastos</span>
+                                                    <span class="key-stat-value" id="report-no-expense-days">0</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="key-stat-label">Categoría principal de gastos</span>
+                                                    <span class="key-stat-value" id="report-top-expense-category">-</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="key-stat-label">Categoría principal de ingresos</span>
+                                                    <span class="key-stat-value" id="report-top-income-category">-</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Detalle de Transacciones</h5>
+                                            <div class="table-responsive">
+                                                <table id="report-transactions-table" class="table table-sm table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Fecha</th>
+                                                            <th>Descripción</th>
+                                                            <th>Categoría</th>
+                                                            <th>Tipo</th>
+                                                            <th class="text-end">Monto</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <!-- Report transactions will be added dynamically -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category Analysis Report -->
+                        <div id="category-analysis-report" class="report-section" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Distribución de Gastos por Categoría</h5>
+                                            <div class="chart-container">
+                                                <canvas id="category-expenses-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Distribución de Ingresos por Categoría</h5>
+                                            <div class="chart-container">
+                                                <canvas id="category-income-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Desglose por Categoría</h5>
+                                            <div class="table-responsive">
+                                                <table id="category-analysis-table" class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Categoría</th>
+                                                            <th>Tipo</th>
+                                                            <th class="text-end">Total</th>
+                                                            <th class="text-end">Promedio</th>
+                                                            <th class="text-end">% del Total</th>
+                                                            <th class="text-end">Transacciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <!-- Category analysis data will be added dynamically -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trends Analysis Report -->
+                        <div id="trends-analysis-report" class="report-section" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Tendencia de Ingresos y Gastos</h5>
+                                            <div class="chart-container">
+                                                <canvas id="trends-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Análisis de Tendencia</h5>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="trend-label">Tendencia de ingresos</span>
+                                                    <span class="trend-value" id="income-trend-indicator">Estable</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="trend-label">Tendencia de gastos</span>
+                                                    <span class="trend-value" id="expense-trend-indicator">Estable</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="trend-label">Categoría de mayor crecimiento</span>
+                                                    <span class="trend-value" id="growing-category">-</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="trend-label">Categoría de mayor reducción</span>
+                                                    <span class="trend-value" id="declining-category">-</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span class="trend-label">Variación mensual</span>
+                                                    <span class="trend-value" id="monthly-variation">0%</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Predicción</h5>
+                                            <p class="mb-3">Basado en tus patrones de gasto e ingreso, se estima:</p>
+                                            <div class="prediction-box p-3 bg-light rounded mb-3">
+                                                <h6>Próximo mes</h6>
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <span class="prediction-label">Ingresos estimados</span>
+                                                        <span class="prediction-value" id="estimated-income">$0,00</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="prediction-label">Gastos estimados</span>
+                                                        <span class="prediction-value" id="estimated-expenses">$0,00</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="chart-container">
+                                                <canvas id="prediction-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cash Flow Report -->
+                        <div id="cashflow-report" class="report-section" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Flujo de Efectivo</h5>
+                                            <div class="chart-container">
+                                                <canvas id="cashflow-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Resumen de Flujo de Efectivo</h5>
+                                            <div class="cashflow-summary p-3 mb-3 bg-light rounded">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Saldo inicial:</span>
+                                                    <span id="cashflow-initial-balance">$0,00</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Total ingresos:</span>
+                                                    <span id="cashflow-total-income" class="text-success">$0,00</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Total gastos:</span>
+                                                    <span id="cashflow-total-expenses" class="text-danger">$0,00</span>
+                                                </div>
+                                                <hr>
+                                                <div class="d-flex justify-content-between">
+                                                    <strong>Saldo final:</strong>
+                                                    <strong id="cashflow-final-balance">$0,00</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Análisis de Flujo de Efectivo</h5>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Promedio de ingresos diarios:</span>
+                                                    <span id="cashflow-daily-income">$0,00</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Promedio de gastos diarios:</span>
+                                                    <span id="cashflow-daily-expense">$0,00</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Días con flujo positivo:</span>
+                                                    <span id="cashflow-positive-days">0</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Días con flujo negativo:</span>
+                                                    <span id="cashflow-negative-days">0</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Día con mayor ingreso:</span>
+                                                    <span id="cashflow-highest-income-day">-</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Día con mayor gasto:</span>
+                                                    <span id="cashflow-highest-expense-day">-</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Savings Analysis Report -->
+                        <div id="savings-analysis-report" class="report-section" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Tendencia de Ahorros</h5>
+                                            <div class="chart-container">
+                                                <canvas id="savings-trend-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Distribución de Ahorros</h5>
+                                            <div class="chart-container">
+                                                <canvas id="savings-distribution-chart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Resumen de Ahorros</h5>
+                                            <div class="p-3 mb-3 bg-light rounded">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Total ahorrado:</span>
+                                                    <span id="total-saved">$0,00</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Promedio mensual:</span>
+                                                    <span id="monthly-average-savings">$0,00</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>Porcentaje de ingresos:</span>
+                                                    <span id="savings-percentage">0%</span>
+                                                </div>
+                                            </div>
+                                            <h6>Proyección de Ahorros</h6>
+                                            <div class="savings-projection p-3 bg-light rounded">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>En 3 meses:</span>
+                                                    <span id="projection-3-months">$0,00</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>En 6 meses:</span>
+                                                    <span id="projection-6-months">$0,00</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span>En 1 año:</span>
+                                                    <span id="projection-1-year">$0,00</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Historial de Alcancía</h5>
+                                            <div class="table-responsive">
+                                                <table id="piggy-bank-history-table" class="table table-sm table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Fecha</th>
+                                                            <th>Descripción</th>
+                                                            <th class="text-end">Monto</th>
+                                                            <th class="text-end">Balance</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <!-- Piggy bank history will be added dynamically -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings-section" style="display: none;">
+                    <div class="user-header mt-3 mb-4">
+                        <h4>Configuración</h4>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Preferencias Generales</h5>
+                                    
+                                    <form id="general-settings-form">
+                                        <div class="mb-3">
+                                            <label for="currency-format" class="form-label">Formato de Moneda</label>
+                                            <select id="currency-format" class="form-select">
+                                                <option value="$ #,##0.00">$ 1,234.56 (USD)</option>
+                                                <option value="€ #,##0.00">€ 1.234,56 (EUR)</option>
+                                                <option value="£ #,##0.00">£ 1,234.56 (GBP)</option>
+                                                <option value="¥ #,##0">¥ 1,235 (JPY)</option>
+                                                <option value="$ #.##0,00" selected>$ 1.234,56 (MXN/ARS)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="date-format" class="form-label">Formato de Fecha</label>
+                                            <select id="date-format" class="form-select">
+                                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                                <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="language" class="form-label">Idioma</label>
+                                            <select id="language" class="form-select">
+                                                <option value="es" selected>Español</option>
+                                                <option value="en">English</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="theme" class="form-label">Tema</label>
+                                            <select id="theme" class="form-select">
+                                                <option value="light" selected>Claro</option>
+                                                <option value="dark">Oscuro</option>
+                                                <option value="system">Sistema</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="enable-animations" checked>
+                                                <label class="form-check-label" for="enable-animations">Habilitar animaciones</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">Guardar Preferencias</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Metas Financieras</h5>
+                                    
+                                    <form id="financial-goals-form">
+                                        <div class="mb-3">
+                                            <label for="monthly-savings-goal" class="form-label">Meta mensual de ahorro</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="monthly-savings-goal" value="0">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="budget-limit" class="form-label">Límite de presupuesto mensual</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="budget-limit" value="0">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="enable-budget-alerts" checked>
+                                                <label class="form-check-label" for="enable-budget-alerts">Alertas cuando exceda el presupuesto</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">Guardar Metas</button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Exportar e Importar Datos</h5>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button id="export-data" class="btn btn-outline-primary">
+                                            <i class="fas fa-file-export"></i> Exportar Todos los Datos
+                                        </button>
+                                        
+                                        <button id="import-data" class="btn btn-outline-success">
+                                            <i class="fas fa-file-import"></i> Importar Datos
+                                        </button>
+                                        
+                                        <div class="mt-3">
+                                            <input type="file" id="import-file" class="form-control" style="display: none;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <h6>Borrar Datos</h6>
+                                        <div class="alert alert-danger">
+                                            <p class="mb-2"><strong>Advertencia:</strong> Esta acción no se puede deshacer.</p>
+                                            <button id="delete-all-data" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash"></i> Borrar Todos los Datos
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Transaction Modal -->
+    <div class="modal fade" id="transaction-modal" tabindex="-1" aria-labelledby="transaction-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transaction-modal-label">Nueva Transacción</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="transaction-form">
+                        <div class="mb-3">
+                            <label for="transaction-type" class="form-label">Tipo</label>
+                            <select id="transaction-type" class="form-select">
+                                <option value="income">Ingreso</option>
+                                <option value="expense">Gasto</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="transaction-amount" class="form-label">Monto</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="transaction-amount" required step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="transaction-date" class="form-label">Fecha</label>
+                            <input type="text" class="form-control" id="transaction-date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="transaction-description" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="transaction-description" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="transaction-category" class="form-label">Categoría</label>
+                            <select id="transaction-category" class="form-select">
+                                <!-- Categories will be added dynamically -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="add-to-piggy-bank-check">
+                                <label class="form-check-label" for="add-to-piggy-bank-check">
+                                    Añadir a alcancía (solo para ingresos)
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-transaction">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Category Modal -->
+    <div class="modal fade" id="category-modal" tabindex="-1" aria-labelledby="category-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="category-modal-label">Nueva Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="category-form">
+                        <div class="mb-3">
+                            <label for="category-type" class="form-label">Tipo</label>
+                            <select id="category-type" class="form-select">
+                                <option value="income">Ingreso</option>
+                                <option value="expense">Gasto</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category-name" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="category-name" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-category">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Piggy Bank Modal -->
+    <div class="modal fade" id="piggy-bank-modal" tabindex="-1" aria-labelledby="piggy-bank-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="piggy-bank-modal-label">Operación en Alcancía</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="piggy-bank-form">
+                        <div class="mb-3">
+                            <label for="piggy-bank-amount" class="form-label">Monto</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="piggy-bank-amount" required step="0.01" min="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="piggy-bank-description" class="form-label">Descripción (opcional)</label>
+                            <input type="text" class="form-control" id="piggy-bank-description" placeholder="Ej. Ahorro mensual">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="save-piggy-bank">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirm Delete Modal -->
+    <div class="modal fade" id="delete-confirmation-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="delete-confirmation-message">¿Estás seguro de que deseas eliminar este elemento?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts al final del body -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
